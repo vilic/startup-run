@@ -17,13 +17,9 @@ export class WindowsStartupRun extends StartupRun {
   override async enable(): Promise<void> {
     await this.validate();
 
-    const {name, hidden, reg} = this;
+    const {name, reg} = this;
 
-    const segments = this.buildCommandSegments();
-
-    if (hidden) {
-      segments.unshift(HIDEEXEC_PATH);
-    }
+    const segments = [HIDEEXEC_PATH, ...this.buildCommandSegments()];
 
     const line = commandJoin(segments);
 

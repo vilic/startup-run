@@ -11,9 +11,6 @@ dependencies:
   '@types/winreg':
     specifier: ^1.2.33
     version: 1.2.33
-  applescript:
-    specifier: ^1.0.0
-    version: 1.0.0
   chalk:
     specifier: '4'
     version: 4.1.2
@@ -26,15 +23,9 @@ dependencies:
   main-function:
     specifier: ^0.1.7
     version: 0.1.7
-  mkdirp:
-    specifier: ^3.0.1
-    version: 3.0.1
   tslib:
     specifier: ^2.6.2
     version: 2.6.2
-  untildify:
-    specifier: ^5.0.0
-    version: 5.0.0
   winreg:
     specifier: ^1.2.4
     version: 1.2.4
@@ -423,10 +414,6 @@ packages:
     resolution: {integrity: sha512-bN798gFfQX+viw3R7yrGWRqnrN2oRkEkUjjl4JNn4E8GxxbjtG3FbrEIIY3l8/hrwUwIeCZvi4QuOTP4MErVug==}
     engines: {node: '>=12'}
     dev: true
-
-  /applescript@1.0.0:
-    resolution: {integrity: sha512-yvtNHdWvtbYEiIazXAdp/NY+BBb65/DAseqlNiJQjOx9DynuzOYDbVLBJvuc0ve0VL9x6B3OHF6eH52y9hCBtQ==}
-    dev: false
 
   /argparse@2.0.1:
     resolution: {integrity: sha512-8+9WqebbFzpX9OR+Wa6O29asIogeRMzcGtAINdpMHHyAg10f05aSFVBbcEqGf/PXw1EjAZ+q2/bEBg3DvurK3Q==}
@@ -1662,12 +1649,6 @@ packages:
     engines: {node: '>=16 || 14 >=14.17'}
     dev: true
 
-  /mkdirp@3.0.1:
-    resolution: {integrity: sha512-+NsyUUAZDmo6YVHzL/stxSu3t9YS1iljliy3BSDrXJ/dkn1KYdmtZODGGjLcc9XLgVVpH4KshHB8XmZgMhaBXg==}
-    engines: {node: '>=10'}
-    hasBin: true
-    dev: false
-
   /module-lens@0.1.6:
     resolution: {integrity: sha512-mVnydRRE7uaVZbfeS5ajDqcncoBL67qNyZvQ3MX5+dxnK7KjT96JSqpKjc2a1v3Hz1ElMHn+JO8k2QCUsUfrgA==}
     dev: true
@@ -2282,11 +2263,6 @@ packages:
   /universalify@2.0.0:
     resolution: {integrity: sha512-hAZsKq7Yy11Zu1DE0OzWjw7nnLZmJZYTDZZyEFHZdUhV8FkH5MCfoU1XMaxXovpyW5nq5scPqq0ZDP9Zyl04oQ==}
     engines: {node: '>= 10.0.0'}
-    dev: false
-
-  /untildify@5.0.0:
-    resolution: {integrity: sha512-bOgQLUnd2G5rhzaTvh1VCI9Fo6bC5cLTpH17T5aFfamyXFYDbbdzN6IXdeoc3jBS7T9hNTmJtYUzJCJ2Xlc9gA==}
-    engines: {node: '>=16'}
     dev: false
 
   /uri-js@4.4.1:

@@ -10,16 +10,23 @@ export const RESPAWN_DELAY = 1000;
 
 export interface StartupRunOptions {
   /**
-   * The name of the startup run instance, used as identifier.
+   * Command to run, defaults to `process.execPath`.
    */
-  name: string;
-  command: string;
-  args?: string[];
-  cwd?: string;
-  env?: Record<string, string>;
-  hidden?: boolean;
+  command?: string;
   /**
-   * Log file path, defaults to `false` and `true` defaults to "<name>.log".
+   * Arguments for command, defaults to `process.argv.slice(1)`.
+   */
+  args?: string[];
+  /**
+   * Current working directory, defaults to `process.cwd()`.
+   */
+  cwd?: string;
+  /**
+   * Environment variables, defaults to `{}`.
+   */
+  env?: Record<string, string>;
+  /**
+   * Log file path, defaults to `true` and `true` defaults to "<name>.log".
    */
   log?: boolean | string;
   /**
@@ -39,22 +46,24 @@ export abstract class StartupRun {
 
   readonly env: Record<string, string>;
 
-  readonly hidden: boolean;
-
   readonly log: string | false;
 
   readonly respawn: number | false;
 
-  constructor({
-    command,
-    name,
-    args = [],
-    cwd = process.cwd(),
-    env = {},
-    hidden = false,
-    log = hidden,
-    respawn = true,
-  }: StartupRunOptions) {
+  constructor(
+    /**
+     * Name of the startup run instance, used as identifier.
+     */
+    name: string,
+    {
+      command = process.execPath,
+      args = process.argv.slice(1),
+      cwd = process.cwd(),
+      env = {},
+      log = true,
+      respawn = true,
+    }: StartupRunOptions = {},
+  ) {
     cwd = resolve(cwd);
 
     if (respawn === true) {
@@ -74,7 +83,6 @@ export abstract class StartupRun {
     this.args = args;
     this.cwd = cwd;
     this.env = env;
-    this.hidden = hidden;
     this.log = log;
     this.respawn = respawn;
   }
@@ -89,7 +97,14 @@ export abstract class StartupRun {
     const {log} = this;
 
     if (typeof log === 'string') {
-      await ensureFile(log);
+      try {
+        await ensureFile(log);
+      } catch (error) {
+        console.error('Failed to ensure log file:');
+        console.error(`  ${log}`);
+
+        throw error;
+      }
     }
   }
 
@@ -110,7 +125,8 @@ export abstract class StartupRun {
     ];
   }
 
-  static create: (options: StartupRunOptions) => StartupRun = () => {
-    throw new Error('Not implemented.');
-  };
+  static create: (name: string, options?: StartupRunOptions) => StartupRun =
+    () => {
+      throw new Error('Not implemented.');
+    };
 }
