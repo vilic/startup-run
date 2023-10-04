@@ -2,6 +2,11 @@
 
 Run **scripts** at startup with ease.
 
+## Features
+
+- Run non-GUI scripts at startup.
+- Run as current user on Windows.
+
 ## Installation
 
 ```bash
