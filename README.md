@@ -13,12 +13,26 @@ npm install startup-run
 ```js
 import {StartupRun} from 'startup-run';
 
-const run = StartupRun.create({
-  name: 'awesome-script',
-  command: process.execPath,
-});
+const run = StartupRun.create('awesome-script');
 
 await run.enable();
+
+await run.disable();
+
+await run.isEnabled(); // boolean
+```
+
+### Default Options
+
+```js
+const run = StartupRun.create('<name>', {
+  command: process.execPath,
+  args: process.argv.slice(1),
+  cwd: process.cwd(),
+  env: {},
+  log: true,
+  respawn: true,
+});
 ```
 
 ## Third Parties
