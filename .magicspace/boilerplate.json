@@ -11,7 +11,8 @@
         "name": "library"
       },
       {
-        "name": "daemon"
+        "name": "daemon",
+        "references": ["library"]
       },
       {
         "name": "test",
