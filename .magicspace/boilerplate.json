@@ -5,6 +5,7 @@
     "name": "startup-run",
     "license": "MIT",
     "author": "vilicvane",
+    "defaultBranch": "master",
     "packageManager": "pnpm",
     "projects": [
       {
