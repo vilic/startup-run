@@ -7,6 +7,12 @@ Run **scripts** at startup with ease.
 - Run non-GUI scripts at startup.
 - Run as current user on Windows.
 
+## Implementations
+
+- Windows: `HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Run`
+- macOS: `~/Library/LaunchAgents`
+- Linux: `~/.config/autostart`
+
 ## Installation
 
 ```bash
