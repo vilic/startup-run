@@ -1,7 +1,7 @@
 import {join} from 'path';
 import {promisify} from 'util';
 
-import {quote} from 'shell-quote';
+import {commandJoin} from 'command-join';
 import WinReg from 'winreg';
 
 import {StartupRun} from '../startup-run';
@@ -15,6 +15,8 @@ export class WindowsStartupRun extends StartupRun {
   });
 
   override async enable(): Promise<void> {
+    await this.validate();
+
     const {name, hidden, reg} = this;
 
     const segments = this.buildCommandSegments();
@@ -23,16 +25,24 @@ export class WindowsStartupRun extends StartupRun {
       segments.unshift(HIDEEXEC_PATH);
     }
 
-    const line = quote(segments);
+    const line = commandJoin(segments);
 
     await promisify(reg.set.bind(reg))(name, WinReg.REG_SZ, line);
   }
 
-  override disable(): Promise<void> {
-    throw new Error('Method not implemented.');
+  override async disable(): Promise<void> {
+    const {name, reg} = this;
+
+    if (!(await this.isEnabled())) {
+      return;
+    }
+
+    await promisify(reg.remove.bind(reg))(name);
   }
 
-  override isEnabled(): Promise<boolean> {
-    throw new Error('Method not implemented.');
+  override async isEnabled(): Promise<boolean> {
+    const {name, reg} = this;
+
+    return promisify(reg.valueExists.bind(reg))(name);
   }
 }

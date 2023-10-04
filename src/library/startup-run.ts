@@ -1,4 +1,8 @@
-import {join} from 'path';
+import {join, resolve} from 'path';
+
+import {ensureFile} from 'fs-extra';
+
+import type {DaemonOptions} from './daemon';
 
 export const DAEMON_PATH = join(__dirname, '../daemon/main.js');
 
@@ -14,6 +18,10 @@ export interface StartupRunOptions {
   cwd?: string;
   env?: Record<string, string>;
   hidden?: boolean;
+  /**
+   * Log file path, defaults to `false` and `true` defaults to "<name>.log".
+   */
+  log?: boolean | string;
   /**
    * Respawn on exit, defaults to `true` and `true` defaults to 1000 ms.
    */
@@ -33,6 +41,8 @@ export abstract class StartupRun {
 
   readonly hidden: boolean;
 
+  readonly log: string | false;
+
   readonly respawn: number | false;
 
   constructor({
@@ -42,10 +52,21 @@ export abstract class StartupRun {
     cwd = process.cwd(),
     env = {},
     hidden = false,
+    log = hidden,
     respawn = true,
   }: StartupRunOptions) {
+    cwd = resolve(cwd);
+
     if (respawn === true) {
       respawn = RESPAWN_DELAY;
+    }
+
+    if (log === true) {
+      log = `${name}.log`;
+    }
+
+    if (typeof log === 'string') {
+      log = resolve(cwd, log);
     }
 
     this.name = name;
@@ -54,6 +75,7 @@ export abstract class StartupRun {
     this.cwd = cwd;
     this.env = env;
     this.hidden = hidden;
+    this.log = log;
     this.respawn = respawn;
   }
 
@@ -63,8 +85,16 @@ export abstract class StartupRun {
 
   abstract isEnabled(): Promise<boolean>;
 
+  protected async validate(): Promise<void> {
+    const {log} = this;
+
+    if (typeof log === 'string') {
+      await ensureFile(log);
+    }
+  }
+
   protected buildCommandSegments(): string[] {
-    const {command, args, cwd, env} = this;
+    const {command, args, cwd, env, log, respawn} = this;
 
     return [
       process.execPath,
@@ -74,7 +104,13 @@ export abstract class StartupRun {
         args,
         cwd,
         env,
-      }),
+        log,
+        respawn,
+      } satisfies DaemonOptions),
     ];
   }
+
+  static create: (options: StartupRunOptions) => StartupRun = () => {
+    throw new Error('Not implemented.');
+  };
 }

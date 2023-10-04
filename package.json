@@ -16,12 +16,14 @@
     "test": "pnpm lint-prettier && pnpm build && pnpm lint"
   },
   "dependencies": {
-    "@types/shell-quote": "^1.7.2",
+    "@types/fs-extra": "^11.0.2",
     "@types/winreg": "^1.2.33",
     "applescript": "^1.0.0",
+    "chalk": "4",
+    "command-join": "^3.0.0",
+    "fs-extra": "^11.1.1",
     "main-function": "^0.1.7",
     "mkdirp": "^3.0.1",
-    "shell-quote": "^1.8.1",
     "tslib": "^2.6.2",
     "untildify": "^5.0.0",
     "winreg": "^1.2.4"
