@@ -6,16 +6,14 @@
 
 Run **scripts** at startup with ease.
 
+Supports **Windows**, **macOS** and **Linux** (Desktop).
+
 ## Features
 
-- Run non-GUI scripts at startup.
-- Run as current user on Windows.
-
-## Implementations
-
-- Windows: `HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Run`
-- macOS: `~/Library/LaunchAgents`
-- Linux: `~/.config/autostart`
+- Run non-GUI scripts at startup, **hidden**.
+- Run as **current user** on Windows (running as service would cause problems for scripts with UI interactions).
+- Log to file.
+- Auto restart (respawn) on exit.
 
 ## Installation
 
@@ -49,6 +47,34 @@ const run = StartupRun.create('<name>', {
   respawn: true,
 });
 ```
+
+## Implementations
+
+### Windows
+
+On Windows, it adds a startup item to registry at `HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Run`, thus starting the script at login as current user.
+
+> Solutions like `pm2` run scripts as service, which would cause problems for scripts with UI interactions.
+
+Tested on:
+
+- Windows 11
+
+### macOS
+
+On macOS, it adds a `.plist` file to `~/Library/LaunchAgents`.
+
+Tested on:
+
+- macOS Sonoma 14
+
+### Linux
+
+On Linux, it adds a `.desktop` file to `~/.config/autostart`.
+
+Tested on:
+
+- Ubuntu 22.04 (Desktop)
 
 ## Third Parties
 
