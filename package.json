@@ -1,6 +1,8 @@
 {
   "name": "startup-run",
   "version": "0.0.0",
+  "description": "Run scripts at startup with ease.",
+  "repository": "https://github.com/vilic/startup-run.git",
   "license": "MIT",
   "author": "vilicvane",
   "exports": {
