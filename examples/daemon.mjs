@@ -6,16 +6,7 @@ setInterval(() => {
 
 const run = StartupRun.create('daemon-script');
 
-if (!StartupRun.daemonSpawned) {
-  if (process.argv.includes('--enable')) {
-    await run.enable();
-
-    run.start();
-
-    process.exit();
-  } else if (process.argv.includes('--disable')) {
-    await run.disable();
-
-    process.exit();
-  }
-}
+run.setup({
+  enable: process.argv.includes('--enable'),
+  disable: process.argv.includes('--disable'),
+});

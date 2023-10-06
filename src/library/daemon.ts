@@ -21,7 +21,7 @@ export class DaemonInstance {
     this.pidFilePath = join(homedir(), `.${name}/daemon.pid`);
   }
 
-  async replace(): Promise<void> {
+  async kill(): Promise<void> {
     const existingPId = await this.getPId();
 
     if (typeof existingPId === 'number') {
@@ -29,7 +29,10 @@ export class DaemonInstance {
         process.kill(existingPId);
       } catch {}
     }
+  }
 
+  async replace(): Promise<void> {
+    await this.kill();
     await this.setPId(process.pid);
   }
 

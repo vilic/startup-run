@@ -3,7 +3,7 @@ import {join, resolve} from 'path';
 
 import {ensureFile} from 'fs-extra';
 
-import type {DaemonOptions} from './daemon';
+import {DaemonInstance, type DaemonOptions} from './daemon';
 
 export const DAEMON_PATH = join(__dirname, '../daemon/main.js');
 
@@ -106,6 +106,35 @@ export abstract class StartupRun {
     spawn(command, args, {detached: true}).unref();
   }
 
+  async stop(): Promise<void> {
+    const instance = new DaemonInstance(this.name);
+
+    await instance.kill();
+  }
+
+  async setup({
+    enable = false,
+    disable = false,
+  }: StartupRunSetupOptions): Promise<void> {
+    if (StartupRun.daemonSpawned) {
+      return;
+    }
+
+    if (enable) {
+      await this.enable();
+      await this.start();
+
+      process.exit();
+    } else if (disable) {
+      await this.stop();
+      await this.disable();
+
+      process.exit();
+    } else {
+      await this.stop();
+    }
+  }
+
   protected async validate(): Promise<void> {
     const {log} = this;
 
@@ -146,4 +175,9 @@ export abstract class StartupRun {
     () => {
       throw new Error('Not implemented.');
     };
+}
+
+export interface StartupRunSetupOptions {
+  enable?: boolean;
+  disable?: boolean;
 }
