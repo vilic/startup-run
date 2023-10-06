@@ -94,7 +94,7 @@ export abstract class StartupRun {
 
   abstract isEnabled(): Promise<boolean>;
 
-  start(): void {
+  async start(): Promise<void> {
     if (StartupRun.daemonSpawned) {
       throw new Error(
         'Process spawned by startup-run daemon cannot start daemon process.',
@@ -122,12 +122,13 @@ export abstract class StartupRun {
   }
 
   protected buildCommandSegments(): string[] {
-    const {command, args, cwd, env, log, respawn} = this;
+    const {name, command, args, cwd, env, log, respawn} = this;
 
     return [
       process.execPath,
       DAEMON_PATH,
       JSON.stringify({
+        name,
         command,
         args,
         cwd,

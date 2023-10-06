@@ -10,14 +10,18 @@ import type {WriteStream} from 'fs-extra';
 import {createWriteStream, ensureFile} from 'fs-extra';
 import main, {SIGNAL} from 'main-function';
 
-import type {DaemonOptions} from 'startup-run';
+import {DaemonInstance, type DaemonOptions} from 'startup-run';
 
 const COLORS = supportsColor !== false;
 
 main(async ([optionsJSON]) => {
-  const {command, args, cwd, env, log, respawn} = JSON.parse(
+  const {name, command, args, cwd, env, log, respawn} = JSON.parse(
     optionsJSON,
   ) as DaemonOptions;
+
+  const instance = new DaemonInstance(name);
+
+  await instance.replace();
 
   let info: (message: unknown) => void;
 
@@ -70,6 +74,8 @@ main(async ([optionsJSON]) => {
   })();
 
   await Promise.race([child, SIGNAL('SIGINT')]);
+
+  await instance.exit();
 });
 
 function format(message: unknown, colors: boolean): string {
