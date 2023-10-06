@@ -50,6 +50,7 @@ main(async ([optionsJSON]) => {
         env: {
           ...process.env,
           ...env,
+          STARTUP_RUN_DAEMON: process.pid.toString(),
         },
         stdio: logStream ? ['inherit', logStream, logStream] : 'inherit',
       });

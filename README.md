@@ -33,6 +33,10 @@ await run.enable();
 await run.disable();
 
 await run.isEnabled(); // boolean
+
+run.start(); // start daemon now.
+
+StartupRun.daemonSpawned; // boolean
 ```
 
 ### Default Options

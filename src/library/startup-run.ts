@@ -1,3 +1,4 @@
+import {spawn} from 'child_process';
 import {join, resolve} from 'path';
 
 import {ensureFile} from 'fs-extra';
@@ -93,6 +94,18 @@ export abstract class StartupRun {
 
   abstract isEnabled(): Promise<boolean>;
 
+  start(): void {
+    if (StartupRun.daemonSpawned) {
+      throw new Error(
+        'Process spawned by startup-run daemon cannot start daemon process.',
+      );
+    }
+
+    const [command, ...args] = this.buildCommandSegments();
+
+    spawn(command, args, {detached: true}).unref();
+  }
+
   protected async validate(): Promise<void> {
     const {log} = this;
 
@@ -124,6 +137,9 @@ export abstract class StartupRun {
       } satisfies DaemonOptions),
     ];
   }
+
+  static daemonSpawned =
+    Number(process.env.STARTUP_RUN_DAEMON) === process.ppid;
 
   static create: (name: string, options?: StartupRunOptions) => StartupRun =
     () => {

@@ -19,7 +19,7 @@ export class WindowsStartupRun extends StartupRun {
 
     const {name, reg} = this;
 
-    const segments = [HIDEEXEC_PATH, ...this.buildCommandSegments()];
+    const segments = this.buildCommandSegments();
 
     const line = commandJoin(segments);
 
@@ -40,5 +40,9 @@ export class WindowsStartupRun extends StartupRun {
     const {name, reg} = this;
 
     return promisify(reg.valueExists.bind(reg))(name);
+  }
+
+  protected override buildCommandSegments(): string[] {
+    return [HIDEEXEC_PATH, ...super.buildCommandSegments()];
   }
 }
