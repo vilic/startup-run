@@ -2,7 +2,7 @@ import {StartupRun} from 'startup-run';
 
 const run = StartupRun.create('daemon-script');
 
-run.setup({
+await run.setup({
   enable: process.argv.includes('--enable'),
   disable: process.argv.includes('--disable'),
 });
