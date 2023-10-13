@@ -4,7 +4,7 @@
 
 # startup-run
 
-Run **scripts** at startup with ease.
+Run **command-line scripts** at startup with ease.
 
 Supports **Windows**, **macOS** and **Linux** (Desktop).
 
