@@ -34,13 +34,13 @@ await run.disable();
 
 await run.isEnabled(); // boolean
 
-run.start(); // start daemon.
+await run.start(); // start daemon.
 
-run.stop(); // stop daemon.
+await run.stop(); // stop daemon.
 
 // Setup to enable/disable startup, this exits current process if either
 // `enable` or `disable` is true.
-run.setup({
+await run.setup({
   enable: process.argv.includes('--startup'),
   disable: process.argv.includes('--disable-startup'),
 });
