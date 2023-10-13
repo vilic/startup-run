@@ -34,9 +34,18 @@ await run.disable();
 
 await run.isEnabled(); // boolean
 
-run.start(); // start daemon now.
+run.start(); // start daemon.
 
-StartupRun.daemonSpawned; // boolean
+run.stop(); // stop daemon.
+
+// Setup to enable/disable startup, this exits current process if either
+// `enable` or `disable` is true.
+run.setup({
+  enable: process.argv.includes('--startup'),
+  disable: process.argv.includes('--disable-startup'),
+});
+
+StartupRun.daemonSpawned; // boolean, is current process spawned by daemon.
 ```
 
 ### Default Options
