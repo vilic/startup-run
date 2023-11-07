@@ -3,13 +3,13 @@ import {join, resolve} from 'path';
 
 import {ensureFile} from 'fs-extra';
 
-import {DaemonInstance, type DaemonOptions} from './daemon';
+import {DaemonInstance, type DaemonOptions} from './daemon.js';
 
 export const DAEMON_PATH = join(__dirname, '../daemon/main.js');
 
 export const RESPAWN_DELAY = 1000;
 
-export interface StartupRunOptions {
+export type StartupRunOptions = {
   /**
    * Command to run, defaults to `process.execPath`.
    */
@@ -34,7 +34,7 @@ export interface StartupRunOptions {
    * Respawn on exit, defaults to `true` and `true` defaults to 1000 ms.
    */
   respawn?: boolean | number;
-}
+};
 
 export abstract class StartupRun {
   readonly command: string;
@@ -177,7 +177,7 @@ export abstract class StartupRun {
     };
 }
 
-export interface StartupRunSetupOptions {
+export type StartupRunSetupOptions = {
   enable?: boolean;
   disable?: boolean;
-}
+};

@@ -3,7 +3,7 @@ import {join} from 'path';
 
 import {outputFile, readFile, remove} from 'fs-extra';
 
-export interface DaemonOptions {
+export type DaemonOptions = {
   name: string;
   command: string;
   args: string[];
@@ -11,7 +11,7 @@ export interface DaemonOptions {
   env: Record<string, string>;
   log: string | false;
   respawn: number | false;
-}
+};
 
 export class DaemonInstance {
   readonly pidFilePath: string;
@@ -27,7 +27,9 @@ export class DaemonInstance {
     if (typeof existingPId === 'number') {
       try {
         process.kill(existingPId);
-      } catch {}
+      } catch {
+        // ignore
+      }
     }
   }
 

@@ -1,8 +1,8 @@
-import {StartupRun} from '../startup-run';
+import {StartupRun} from '../startup-run.js';
 
-import {LinuxStartupRun} from './linux';
-import {MacOSStartupRun} from './macos';
-import {WindowsStartupRun} from './windows';
+import {LinuxStartupRun} from './linux.js';
+import {MacOSStartupRun} from './macos.js';
+import {WindowsStartupRun} from './windows.js';
 
 switch (process.platform) {
   case 'win32':
@@ -20,6 +20,6 @@ switch (process.platform) {
     );
 }
 
-export * from './linux';
-export * from './macos';
-export * from './windows';
+export * from './linux.js';
+export * from './macos.js';
+export * from './windows.js';

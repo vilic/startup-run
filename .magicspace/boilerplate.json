@@ -12,6 +12,7 @@
       "repo": true,
       "license": true
     },
+    "type": "module",
     "defaultBranch": "master",
     "packageManager": "pnpm",
     "projects": [

@@ -4,7 +4,7 @@ import {join} from 'path';
 import {commandJoin} from 'command-join';
 import {exists, outputFile, unlink} from 'fs-extra';
 
-import {StartupRun} from '../startup-run';
+import {StartupRun} from '../startup-run.js';
 
 export class LinuxStartupRun extends StartupRun {
   private autoStartFilePath = join(

@@ -4,7 +4,7 @@ import {promisify} from 'util';
 import {commandJoin} from 'command-join';
 import WinReg from 'winreg';
 
-import {StartupRun} from '../startup-run';
+import {StartupRun} from '../startup-run.js';
 
 const HIDEEXEC_PATH = join(__dirname, '../../../bin/hideexec.exe');
 

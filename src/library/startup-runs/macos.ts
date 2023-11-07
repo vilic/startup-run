@@ -3,7 +3,7 @@ import {join} from 'path';
 
 import {exists, outputFile, unlink} from 'fs-extra';
 
-import {StartupRun} from '../startup-run';
+import {StartupRun} from '../startup-run.js';
 
 export class MacOSStartupRun extends StartupRun {
   private launchAgentFilePath = join(

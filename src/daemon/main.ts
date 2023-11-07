@@ -8,7 +8,7 @@ import {inspect} from 'util';
 import Chalk, {supportsColor} from 'chalk';
 import type {WriteStream} from 'fs-extra';
 import {createWriteStream, ensureFile} from 'fs-extra';
-import main, {SIGNAL} from 'main-function';
+import {SIGNAL, main} from 'main-function';
 
 import {DaemonInstance, type DaemonOptions} from 'startup-run';
 
@@ -48,6 +48,7 @@ main(async ([optionsJSON]) => {
   info({command, args, cwd, env, log, respawn});
 
   const child = (async () => {
+    // eslint-disable-next-line no-constant-condition
     while (true) {
       const cp = spawn(command, args, {
         cwd,
