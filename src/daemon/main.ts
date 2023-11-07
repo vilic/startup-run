@@ -2,12 +2,12 @@
 
 import {spawn} from 'child_process';
 import {once} from 'events';
+import {type WriteStream} from 'fs';
 import {setTimeout} from 'timers/promises';
 import {inspect} from 'util';
 
 import Chalk, {supportsColor} from 'chalk';
-import type {WriteStream} from 'fs-extra';
-import {createWriteStream, ensureFile} from 'fs-extra';
+import FSExtra from 'fs-extra';
 import {SIGNAL, main} from 'main-function';
 
 import {DaemonInstance, type DaemonOptions} from 'startup-run';
@@ -15,9 +15,18 @@ import {DaemonInstance, type DaemonOptions} from 'startup-run';
 const COLORS = supportsColor !== false;
 
 main(async ([optionsJSON]) => {
-  const {name, command, args, cwd, env, log, respawn} = JSON.parse(
-    optionsJSON,
-  ) as DaemonOptions;
+  let options: DaemonOptions;
+
+  try {
+    // Compatibility.
+    options = JSON.parse(optionsJSON);
+  } catch {
+    options = JSON.parse(
+      (optionsJSON = Buffer.from(optionsJSON, 'base64').toString()),
+    );
+  }
+
+  const {name, command, args, cwd, env, log, respawn} = options;
 
   const instance = new DaemonInstance(name);
 
@@ -31,9 +40,9 @@ main(async ([optionsJSON]) => {
     // Print log file path.
     console.info(log);
 
-    await ensureFile(log);
+    await FSExtra.ensureFile(log);
 
-    logStream = createWriteStream(log);
+    logStream = FSExtra.createWriteStream(log);
 
     await once(logStream, 'open');
 

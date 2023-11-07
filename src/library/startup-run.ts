@@ -1,11 +1,15 @@
 import {spawn} from 'child_process';
-import {join, resolve} from 'path';
+import {dirname, join, resolve} from 'path';
+import {fileURLToPath} from 'url';
 
-import {ensureFile} from 'fs-extra';
+import FSExtra from 'fs-extra';
 
 import {DaemonInstance, type DaemonOptions} from './daemon.js';
 
-export const DAEMON_PATH = join(__dirname, '../daemon/main.js');
+export const DAEMON_PATH = join(
+  dirname(fileURLToPath(import.meta.url)),
+  '../daemon/main.js',
+);
 
 export const RESPAWN_DELAY = 1000;
 
@@ -140,7 +144,7 @@ export abstract class StartupRun {
 
     if (typeof log === 'string') {
       try {
-        await ensureFile(log);
+        await FSExtra.ensureFile(log);
       } catch (error) {
         console.error('Failed to ensure log file:');
         console.error(`  ${log}`);
@@ -156,15 +160,17 @@ export abstract class StartupRun {
     return [
       process.execPath,
       DAEMON_PATH,
-      JSON.stringify({
-        name,
-        command,
-        args,
-        cwd,
-        env,
-        log,
-        respawn,
-      } satisfies DaemonOptions),
+      Buffer.from(
+        JSON.stringify({
+          name,
+          command,
+          args,
+          cwd,
+          env,
+          log,
+          respawn,
+        } satisfies DaemonOptions),
+      ).toString('base64'),
     ];
   }
 

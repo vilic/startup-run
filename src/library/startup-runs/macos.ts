@@ -1,7 +1,7 @@
 import {homedir} from 'os';
 import {join} from 'path';
 
-import {exists, outputFile, unlink} from 'fs-extra';
+import FSExtra from 'fs-extra';
 
 import {StartupRun} from '../startup-run.js';
 
@@ -38,7 +38,7 @@ ${segments
 </plist>
 `;
 
-    await outputFile(this.launchAgentFilePath, content);
+    await FSExtra.outputFile(this.launchAgentFilePath, content);
   }
 
   override async disable(): Promise<void> {
@@ -46,11 +46,11 @@ ${segments
       return;
     }
 
-    await unlink(this.launchAgentFilePath);
+    await FSExtra.unlink(this.launchAgentFilePath);
   }
 
   override async isEnabled(): Promise<boolean> {
-    return exists(this.launchAgentFilePath);
+    return FSExtra.exists(this.launchAgentFilePath);
   }
 }
 

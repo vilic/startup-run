@@ -2,7 +2,7 @@ import {homedir} from 'os';
 import {join} from 'path';
 
 import {commandJoin} from 'command-join';
-import {exists, outputFile, unlink} from 'fs-extra';
+import FSExtra from 'fs-extra';
 
 import {StartupRun} from '../startup-run.js';
 
@@ -30,7 +30,7 @@ StartupNotify=false
 Terminal=false
 `;
 
-    await outputFile(this.autoStartFilePath, content);
+    await FSExtra.outputFile(this.autoStartFilePath, content);
   }
 
   override async disable(): Promise<void> {
@@ -38,10 +38,10 @@ Terminal=false
       return;
     }
 
-    await unlink(this.autoStartFilePath);
+    await FSExtra.unlink(this.autoStartFilePath);
   }
 
   override async isEnabled(): Promise<boolean> {
-    return exists(this.autoStartFilePath);
+    return FSExtra.exists(this.autoStartFilePath);
   }
 }

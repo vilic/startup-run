@@ -1,7 +1,7 @@
 import {homedir} from 'os';
 import {join} from 'path';
 
-import {outputFile, readFile, remove} from 'fs-extra';
+import FSExtra from 'fs-extra';
 
 export type DaemonOptions = {
   name: string;
@@ -44,7 +44,7 @@ export class DaemonInstance {
 
   private async getPId(): Promise<number | undefined> {
     try {
-      const content = await readFile(this.pidFilePath, 'utf8');
+      const content = await FSExtra.readFile(this.pidFilePath, 'utf8');
       return parseInt(content);
     } catch {
       return undefined;
@@ -52,10 +52,10 @@ export class DaemonInstance {
   }
 
   private async setPId(pid: number): Promise<void> {
-    await outputFile(this.pidFilePath, pid.toString());
+    await FSExtra.outputFile(this.pidFilePath, pid.toString());
   }
 
   private async clearPId(): Promise<void> {
-    await remove(this.pidFilePath);
+    await FSExtra.remove(this.pidFilePath);
   }
 }
