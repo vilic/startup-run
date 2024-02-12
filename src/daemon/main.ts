@@ -14,6 +14,10 @@ import {DaemonInstance, type DaemonOptions} from 'startup-run';
 
 const COLORS = supportsColor !== false;
 
+const MIN_STABLE_UP_TIME = 3000;
+
+const MAX_UNSTABLE_LAUNCHES = 3;
+
 main(async ([optionsJSON]) => {
   let options: DaemonOptions;
 
@@ -32,7 +36,7 @@ main(async ([optionsJSON]) => {
 
   await instance.replace();
 
-  let info: (message: unknown) => void;
+  let info: (message: unknown) => Promise<void>;
 
   let logStream: WriteStream | undefined;
 
@@ -46,19 +50,33 @@ main(async ([optionsJSON]) => {
 
     await once(logStream, 'open');
 
-    info = message => {
-      logStream!.write(`${format(message, false)}\n`);
-    };
+    info = async message =>
+      new Promise<void>((resolve, reject) =>
+        logStream!.write(`${format(message, false)}\n`, error => {
+          if (error) {
+            reject(error);
+          } else {
+            resolve();
+          }
+        }),
+      );
   } else {
-    info = message => console.info(format(message, true));
+    info = async message => console.info(format(message, true));
   }
 
-  info('options:');
-  info({command, args, cwd, env, log, respawn});
+  await info('daemon started.');
+  await info({pid: process.pid, ppid: process.ppid});
+
+  await info('options:');
+  await info({command, args, cwd, env, log, respawn});
 
   const child = (async () => {
+    let unstableLaunches = 0;
+
     // eslint-disable-next-line no-constant-condition
     while (true) {
+      const startedAt = Date.now();
+
       const cp = spawn(command, args, {
         cwd,
         env: {
@@ -67,13 +85,26 @@ main(async ([optionsJSON]) => {
           STARTUP_RUN_DAEMON: process.pid.toString(),
         },
         stdio: logStream ? ['inherit', logStream, logStream] : 'inherit',
+        detached: true,
       });
 
-      info(`started process ${cp.pid ?? 'n/a'}.`);
+      await info(`started process ${cp.pid ?? 'n/a'}.`);
 
       const [code] = (await once(cp, 'exit')) as [number];
 
-      info(`exited with code 0x${code.toString(16)}.`);
+      const upTime = Date.now() - startedAt;
+
+      await info(`exited with code 0x${code.toString(16)}.`);
+
+      if (upTime < MIN_STABLE_UP_TIME) {
+        if (++unstableLaunches >= MAX_UNSTABLE_LAUNCHES) {
+          await info('too many unstable launches, daemon will exit.');
+
+          process.exit(code);
+        }
+      } else {
+        unstableLaunches = 0;
+      }
 
       if (respawn === false) {
         process.exit(code);

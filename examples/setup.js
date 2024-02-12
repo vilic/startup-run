@@ -1,6 +1,6 @@
 import {StartupRun} from 'startup-run';
 
-const run = StartupRun.create('daemon-script');
+const run = StartupRun.create('startup-run-setup-example');
 
 await run.setup({
   enable: process.argv.includes('--enable'),
