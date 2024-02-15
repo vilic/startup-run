@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+import type {ChildProcess} from 'child_process';
 import {spawn} from 'child_process';
 import {once} from 'events';
 import {type WriteStream} from 'fs';
@@ -64,59 +65,81 @@ main(async ([optionsJSON]) => {
     info = async message => console.info(format(message, true));
   }
 
-  await info('daemon started.');
-  await info({pid: process.pid, ppid: process.ppid});
+  await info('daemon started:');
+  await info({
+    pid: process.pid,
+    ppid: process.ppid,
+    command,
+    args,
+    cwd,
+    env,
+    log,
+    respawn,
+  });
 
-  await info('options:');
-  await info({command, args, cwd, env, log, respawn});
+  let exiting = false;
+  let daemonExitCode: number | undefined;
 
-  const child = (async () => {
-    let unstableLaunches = 0;
+  let cp: ChildProcess | undefined;
 
-    // eslint-disable-next-line no-constant-condition
-    while (true) {
-      const startedAt = Date.now();
+  void SIGNAL(['SIGINT', 'SIGTERM']).finally(() => {
+    cp?.kill();
+    exiting = true;
+  });
 
-      const cp = spawn(command, args, {
-        cwd,
-        env: {
-          ...process.env,
-          ...env,
-          STARTUP_RUN_DAEMON: process.pid.toString(),
-        },
-        stdio: logStream ? ['inherit', logStream, logStream] : 'inherit',
-        detached: true,
-      });
+  let unstableLaunches = 0;
 
-      await info(`started process ${cp.pid ?? 'n/a'}.`);
+  // eslint-disable-next-line no-constant-condition
+  while (true) {
+    const startedAt = Date.now();
 
-      const [code] = (await once(cp, 'exit')) as [number];
+    cp = spawn(command, args, {
+      cwd,
+      env: {
+        ...process.env,
+        ...env,
+        STARTUP_RUN_DAEMON: process.pid.toString(),
+      },
+      stdio: logStream ? ['inherit', logStream, logStream] : 'inherit',
+    });
 
-      const upTime = Date.now() - startedAt;
+    await info(`started process:`);
+    await info({pid: cp.pid});
 
-      await info(`exited with code 0x${code.toString(16)}.`);
+    const [exitCode, signal] = (await once(cp, 'exit')) as [
+      number | null,
+      string | null,
+    ];
 
-      if (upTime < MIN_STABLE_UP_TIME) {
-        if (++unstableLaunches >= MAX_UNSTABLE_LAUNCHES) {
-          await info('too many unstable launches, daemon will exit.');
+    const upTime = Date.now() - startedAt;
 
-          process.exit(code);
-        }
-      } else {
-        unstableLaunches = 0;
+    await info(`process exited:`);
+    await info({exitCode, signal});
+
+    if (upTime < MIN_STABLE_UP_TIME) {
+      if (++unstableLaunches >= MAX_UNSTABLE_LAUNCHES) {
+        await info('too many unstable launches, daemon will exit.');
+        daemonExitCode = 1;
+        break;
       }
-
-      if (respawn === false) {
-        process.exit(code);
-      }
-
-      await setTimeout(respawn);
+    } else {
+      unstableLaunches = 0;
     }
-  })();
 
-  await Promise.race([child, SIGNAL('SIGINT')]);
+    if (respawn === false || exiting) {
+      daemonExitCode = exitCode === 0 ? 0 : 1;
+      break;
+    }
 
-  await instance.exit();
+    await setTimeout(respawn);
+  }
+
+  await instance.beforeExit();
+
+  await info('daemon exiting:');
+  await info({exitCode: daemonExitCode});
+
+  return daemonExitCode;
 });
 
 function format(message: unknown, colors: boolean): string {

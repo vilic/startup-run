@@ -35,10 +35,10 @@ export class DaemonInstance {
 
   async replace(): Promise<void> {
     await this.kill();
-    await this.setPId(process.pid);
+    await this.setPId();
   }
 
-  async exit(): Promise<void> {
+  async beforeExit(): Promise<void> {
     await this.clearPId();
   }
 
@@ -51,11 +51,13 @@ export class DaemonInstance {
     }
   }
 
-  private async setPId(pid: number): Promise<void> {
-    await FSExtra.outputFile(this.pidFilePath, pid.toString());
+  private async setPId(): Promise<void> {
+    await FSExtra.outputFile(this.pidFilePath, process.pid.toString());
   }
 
   private async clearPId(): Promise<void> {
-    await FSExtra.remove(this.pidFilePath);
+    if ((await this.getPId()) === process.pid) {
+      await FSExtra.remove(this.pidFilePath);
+    }
   }
 }
